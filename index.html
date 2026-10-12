@@ -1488,6 +1488,10 @@ function modalNC(id){
         <input id="ncMonto" type="text" class="w-full mono" value="${S(r.montoFacturado)}"></label>
       <label class="block"><span class="lbl block mb-1">Fecha de emisión</span>
         <input type="text" class="w-full mono" value="${hoy()}" readonly style="color:var(--text-2)"></label>
+      <div id="ncAvisoAnul" class="sm:col-span-2 flex items-start gap-2.5 rounded border px-3 py-2 text-[11.5px]" style="border-color:var(--idle-bd);background:var(--idle-bg);color:var(--idle)">
+        <svg class="mt-[1px] shrink-0" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12a8 8 0 11-2.3-5.6"/><path d="M20 4v4h-4"/></svg>
+        <div>Con este motivo la operación queda sin efecto: la cuota <b class="mono">${r.cuota}</b> se liberará en un registro nuevo para emitir otro comprobante, igual que al anular.</div>
+      </div>
       <label class="block sm:col-span-2"><span class="lbl block mb-1">Sustento</span>
         <textarea id="ncObs" rows="2" class="w-full" placeholder="Detalle,se muestra al contratante"></textarea></label>
     </div>
@@ -1850,6 +1854,7 @@ document.addEventListener('click', e=>{
       const r=rows().find(v=>v.id===id);
       const tipo=document.getElementById('ncTipo').value;
       const mot=document.getElementById('ncMotivo').selectedOptions[0].textContent;
+      const motCod=document.getElementById('ncMotivo').value;
       const monto=parseFloat(document.getElementById('ncMonto').value.replace(/,/g,''))||0;
       const inSerie=document.getElementById('ncSerie'), inNum=document.getElementById('ncNumero');
       const serie=inSerie.value.trim().toUpperCase(), num=inNum.value.trim().replace(/\D/g,'');
@@ -1866,8 +1871,13 @@ document.addEventListener('click', e=>{
         toast(`La nota <b>${numero}</b> ya está registrada. Verifique el número.`,'bad'); return; }
       r.notas.push({tipo, numero, motivo:mot, monto});
       traza(r,'NOTA',`${tipo} ${numero} registrada por ${mot} · S/ ${S(monto)} sobre el comprobante ${r.numero}. Pendiente de transmisión a EFACT.`,'EJECUTIVO');
+      // Motivo 01: la operación queda sin efecto, así que la cuota se libera igual que al anular
+      const anulaOperacion = tipo==='NOTA DE CRÉDITO' && motCod==='01' && !r.liberadaEn;
+      if(anulaOperacion) liberarCuota(rows(), r);
       cerrar(); renderTable();
-      toast(`${tipo} <b>${numero}</b> registrada. Monto total del comprobante: S/ ${S(montoTotal(r))}.`,'ok');
+      toast(anulaOperacion
+        ? `${tipo} <b>${numero}</b> registrada por anulación de la operación. La cuota ${r.cuota} quedó liberada en un registro nuevo, listo para emitir otro comprobante.`
+        : `${tipo} <b>${numero}</b> registrada. Monto total del comprobante: S/ ${S(montoTotal(r))}.`, 'ok');
     }
     if(a==='anularOk'){
       const r=rows().find(v=>v.id===id);
@@ -1945,10 +1955,15 @@ document.addEventListener('change', e=>{
     list.forEach(r=> c.checked? state.sel.add(r.id) : state.sel.delete(r.id));
     renderTable(); return;
   }
-  if(c.id==='ncTipo'){
-    const se=document.getElementById('ncSerie');
-    if(se && (se.value==='NC01' || se.value==='ND01' || !se.value.trim()))
-      se.value = c.value==='NOTA DE CRÉDITO' ? 'NC01' : 'ND01';
+  if(c.id==='ncTipo' || c.id==='ncMotivo'){
+    if(c.id==='ncTipo'){
+      const se=document.getElementById('ncSerie');
+      if(se && (se.value==='NC01' || se.value==='ND01' || !se.value.trim()))
+        se.value = c.value==='NOTA DE CRÉDITO' ? 'NC01' : 'ND01';
+    }
+    const av=document.getElementById('ncAvisoAnul');
+    if(av) av.hidden = !(document.getElementById('ncTipo').value==='NOTA DE CRÉDITO'
+                      && document.getElementById('ncMotivo').value==='01');
     return;
   }
   if(c.dataset && c.dataset.cat){ cambiarModalidad(c.dataset.cat, c.value); return; }
