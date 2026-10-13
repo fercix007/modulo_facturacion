@@ -1663,7 +1663,7 @@ function modalAnular(id){
     <div class="flex items-start gap-2.5 rounded border px-3 py-2.5 mb-3 text-[11.5px]" style="border-color:var(--bad-bd);background:var(--bad-bg);color:var(--bad)">
       <svg class="mt-[1px] shrink-0" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4.5M12 17h.01"/><path d="M10.3 3.9L2.5 17.4A2 2 0 004.2 20.4h15.6a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg>
       <div>Este es un registro manual de baja del comprobante: <b class="mono">${r.numero}</b>.
-      La accion revierte el pago de la cuota, pero esta no volvera a cobrarse por lo que se volvera a emitir un nuevo comprobante.</div>
+      La acción NO revierte el estado de cobranza de la cuota, es decir, esta no volverá a cobrarse y quedará disponible para la emisión de un nuevo comprobante.</div>
     </div>
     <div class="flex items-start gap-2.5 rounded border px-3 py-2.5 mb-3 text-[11.5px]" style="border-color:var(--idle-bd);background:var(--idle-bg);color:var(--idle)">
       <svg class="mt-[1px] shrink-0" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12a8 8 0 11-2.3-5.6"/><path d="M20 4v4h-4"/></svg>
