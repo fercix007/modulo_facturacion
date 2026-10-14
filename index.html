@@ -1667,11 +1667,7 @@ function modalAnular(id){
     </div>
     <div class="flex items-start gap-2.5 rounded border px-3 py-2.5 mb-3 text-[11.5px]" style="border-color:var(--idle-bd);background:var(--idle-bg);color:var(--idle)">
       <svg class="mt-[1px] shrink-0" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12a8 8 0 11-2.3-5.6"/><path d="M20 4v4h-4"/></svg>
-      <div>El comprobante quedará en la grilla como <b>ANULADO</b> y la cuota <b class="mono">${r.cuota}</b> se liberará en un registro nuevo
-      ${!r.modalidad
-        ? 'que conserva su <b>fecha de pago</b> y queda en <b>PAGADO</b>, listo para emitir un nuevo comprobante con «Reintentar facturación».'
-        : (r.credito ? 'que vuelve a la cola de facturación con <b>crédito a 30 días</b>.'
-                     : 'en estado <b>POR COBRAR</b>: una vez cobrada de nuevo, se emitirá otro comprobante.')}</div>
+      <div>El comprobante quedará en la grilla como <b>ANULADO</b> y la cuota <b class="mono">${r.cuota}</b> se liberará en un registro nuevo</div>
     </div>
     <label class="block mb-3"><span class="lbl block mb-1">Motivo de la baja</span>
       <input id="anMotivo" type="text" class="w-full" placeholder="Ej. Error en el importe de la cuota de setiembre"></label>
